@@ -1,0 +1,18 @@
+{
+  "short_name": "Arandu Chess",
+  "name": "Arandu Chess - Ajedrez Móvil & Web",
+  "icons": [
+    {
+      "src": "/arandu-logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#1c120c",
+  "theme_color": "#d4a359",
+  "display": "standalone",
+  "orientation": "portrait",
+  "description": "Arandu Chess - Aplicación interactiva para aprender y jugar ajedrez online y en móviles. Lecciones teóricas, ejercicios tácticos, entrenamiento y análisis Stockfish."
+}

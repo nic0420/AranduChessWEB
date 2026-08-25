@@ -1,0 +1,419 @@
+/* ==========================================================================
+   ChessMaster Pro - Senior Masterpiece Edition: Mahogany & Walnut Woodcraft Design System
+   Rich, engaging, luxury wood textures with 3D tactile buttons & micro-interactions
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
+
+:root {
+  /* Color Palette - Mahogany & Walnut Woodcraft Theme */
+  --bg-primary: #1c120c;
+  --bg-secondary: #271a12;
+  --bg-tertiary: #38251a;
+  --bg-card: #302016;
+  --bg-card-hover: #422d20;
+
+  --accent-gold: #d4a359;
+  --accent-gold-hover: #e5b66d;
+  --accent-gold-dark: #a87932;
+  
+  --accent-wood-warm: #8c552b;
+  --accent-wood-light: #e6ceac;
+  --accent-wood-dark: #b8864b;
+
+  --accent-green: #6b9e43;
+  --accent-green-hover: #86bd58;
+  --accent-green-dark: #4b752b;
+
+  --text-primary: #f5eae0;
+  --text-secondary: #d1bead;
+  --text-muted: #968171;
+
+  --border-color: rgba(212, 163, 89, 0.15);
+  --border-color-strong: rgba(212, 163, 89, 0.35);
+
+  /* Board Themes (Default Walnut & Birch Wood) */
+  --board-light: #e6ceac;
+  --board-dark: #b8864b;
+  --board-highlight: rgba(245, 185, 66, 0.55);
+  --board-selected: rgba(140, 85, 43, 0.65);
+  --board-move-dot: rgba(60, 35, 20, 0.35);
+  --board-capture-ring: rgba(200, 40, 40, 0.5);
+
+  /* Layout & Spacing */
+  --header-height: 64px;
+  --sidebar-width: 250px;
+  --mobile-nav-height: 68px;
+
+  /* Shadows & Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-wood-inset: inset 0 2px 4px rgba(255, 255, 255, 0.1), inset 0 -3px 6px rgba(0, 0, 0, 0.5);
+  --shadow-gold-glow: 0 0 20px rgba(212, 163, 89, 0.35);
+}
+
+/* Board Theme Overrides */
+.theme-wood {
+  --board-light: #e6ceac;
+  --board-dark: #b8864b;
+}
+.theme-default {
+  --board-light: #eedab3;
+  --board-dark: #769656;
+}
+.theme-cyber {
+  --board-light: #2e3846;
+  --board-dark: #19212c;
+  --board-highlight: rgba(0, 229, 255, 0.4);
+}
+.theme-glass {
+  --board-light: #e2e8f0;
+  --board-dark: #64748b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  background-image: radial-gradient(circle at 50% 0%, #362217 0%, #1c120c 75%);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  user-select: none;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Headings with Classical Luxury Fonts */
+h1, h2, h3 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+/* Custom Wood Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold-dark);
+}
+
+/* 3D Tactile Buttons & Interactive Elements */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Primary Wood/Gold Button */
+.btn-primary {
+  background: linear-gradient(180deg, #d4a359 0%, #a87932 100%);
+  color: #1c120c;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 0.98rem;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 5px 0 #734f1b, 0 8px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  position: relative;
+  top: 0;
+}
+.btn-primary:hover {
+  background: linear-gradient(180deg, #e5b66d 0%, #bd8c42 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #734f1b, 0 12px 22px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.btn-primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #734f1b, 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Emerald Green Felt Button */
+.btn-gold {
+  background: linear-gradient(180deg, #7bb34d 0%, #4f7d2d 100%);
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 5px 0 #37591e, 0 8px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+}
+.btn-gold:hover {
+  background: linear-gradient(180deg, #8dc75c 0%, #5d9136 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #37591e, 0 12px 22px rgba(0, 0, 0, 0.6);
+}
+.btn-gold:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #37591e, 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Secondary Polished Wood Button */
+.btn-secondary {
+  background: linear-gradient(180deg, #3d291e 0%, #2a1b13 100%);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color-strong);
+  box-shadow: 0 4px 0 #180f0a, inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.btn-secondary:hover {
+  background: linear-gradient(180deg, #4d3527 0%, #352319 100%);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+.btn-secondary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #180f0a;
+}
+
+/* App Layout Containers */
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.mobile-frame-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: radial-gradient(circle at center, #2e1e16 0%, #120b07 100%);
+  padding: 20px;
+}
+
+.mobile-phone-frame {
+  width: 410px;
+  height: 820px;
+  max-height: 95vh;
+  background-color: var(--bg-primary);
+  border-radius: 42px;
+  border: 12px solid #4a3224;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(212, 163, 89, 0.25);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.phone-notch {
+  width: 140px;
+  height: 24px;
+  background: #4a3224;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  z-index: 1000;
+}
+
+/* Woodcraft Glassmorphism Cards */
+.glass-card {
+  background: linear-gradient(145deg, rgba(54, 36, 25, 0.85) 0%, rgba(39, 26, 18, 0.95) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Chessboard Styling with Rich Beveled Wood Border */
+.chessboard-container {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 580px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 0 10px #271a12, 0 0 0 12px var(--accent-gold-dark);
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  position: relative;
+  touch-action: none;
+}
+
+.square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.square.light {
+  background-color: var(--board-light);
+  color: var(--board-dark);
+}
+.square.dark {
+  background-color: var(--board-dark);
+  color: var(--board-light);
+}
+
+.square.selected {
+  background-color: var(--board-selected) !important;
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.square.last-move {
+  background-color: var(--board-highlight) !important;
+}
+
+.square.in-check {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.95) 0%, rgba(239, 68, 68, 0.45) 70%, transparent 100%) !important;
+}
+
+.move-dot {
+  width: 28%;
+  height: 28%;
+  background-color: var(--board-move-dot);
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.capture-ring {
+  width: 85%;
+  height: 85%;
+  border: 4px solid var(--board-capture-ring);
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+}
+
+.coord-file, .coord-rank {
+  position: absolute;
+  font-size: 0.72rem;
+  font-weight: 800;
+  pointer-events: none;
+  opacity: 0.85;
+}
+.coord-file {
+  bottom: 3px;
+  right: 4px;
+}
+.coord-rank {
+  top: 3px;
+  left: 4px;
+}
+
+.chess-piece {
+  width: 88%;
+  height: 88%;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+.chess-piece:hover {
+  transform: scale(1.12) translateY(-2px);
+}
+
+/* Pawn Promotion Overlay */
+.promotion-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(20, 12, 7, 0.82);
+  backdrop-filter: blur(6px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.promotion-box {
+  background: linear-gradient(145deg, #38251a 0%, #24160e 100%);
+  border: 2px solid var(--accent-gold);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+}
+
+.promotion-option {
+  width: 64px;
+  height: 64px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color-strong);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.promotion-option:hover {
+  background: var(--accent-gold);
+  border-color: #fff;
+  transform: scale(1.15);
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column-reverse;
+  }
+  .chessboard-container {
+    max-width: 96vw;
+  }
+}
