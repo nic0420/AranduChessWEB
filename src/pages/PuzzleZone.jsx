@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import { PUZZLES_DATABASE } from '../data/puzzlesData';
 import { soundFx } from '../services/audio';
-import { Target, Flame, Lightbulb, RefreshCw, Trophy, HelpCircle, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Target, Flame, Lightbulb, RefreshCw, Trophy } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 /**
@@ -19,11 +19,7 @@ export default function PuzzleZone({ puzzleRating, setPuzzleRating, boardTheme }
 
   const puzzle = PUZZLES_DATABASE[currentPuzzleIndex];
 
-  useEffect(() => {
-    loadPuzzle(currentPuzzleIndex);
-  }, [currentPuzzleIndex]);
-
-  const loadPuzzle = (index) => {
+  const loadPuzzle = useCallback((index) => {
     const p = PUZZLES_DATABASE[index];
     if (p) {
       setGame(new Chess(p.fen));
@@ -31,7 +27,11 @@ export default function PuzzleZone({ puzzleRating, setPuzzleRating, boardTheme }
       setShowHint(false);
       setStatusMessage(null);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadPuzzle(currentPuzzleIndex);
+  }, [currentPuzzleIndex, loadPuzzle]);
 
   const handlePuzzleMove = (moveResult) => {
     const targetMove = puzzle.solution[moveStep];

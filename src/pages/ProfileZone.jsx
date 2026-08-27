@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Trophy, Flame, Settings, Palette, Volume2, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Trophy, Palette } from 'lucide-react';
 
 /**
  * ProfileZone - Player Profile Dashboard & Theme Customizer

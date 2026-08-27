@@ -12,11 +12,11 @@ import confetti from 'canvas-confetti';
 /**
  * PlayZone - Full Featured Game Zone with Stockfish 16 Analysis & Multiplayer Lobby
  */
-export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
+export default function PlayZone({ userElo, updateUserElo, boardTheme, initialBotElo = 1300 }) {
   const [game, setGame] = useState(new Chess());
   const [lastMove, setLastMove] = useState(null);
   const [gameMode, setGameMode] = useState('bot'); // 'bot' | 'online' | 'room'
-  const [selectedBotElo, setSelectedBotElo] = useState(1300);
+  const [selectedBotElo, setSelectedBotElo] = useState(initialBotElo);
   const [timeControl, setTimeControls] = useState(600);
   const [whiteTime, setWhiteTime] = useState(600);
   const [blackTime, setBlackTime] = useState(600);
@@ -25,10 +25,12 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
   const [evalScore, setEvalScore] = useState(0);
   const [moveHistory, setMoveHistory] = useState([]);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [playerColor, setPlayerColor] = useState('w'); // 'w' | 'b'
 
   // Player & Opponent information
   const [opponentName, setOpponentName] = useState('Nelson (Bot)');
   const [opponentElo, setOpponentElo] = useState(1300);
+  const [opponentAvatar, setOpponentAvatar] = useState('🤖');
 
   // Multiplayer Room State
   const [roomCodeInput, setRoomCodeInput] = useState('');
@@ -42,6 +44,39 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   const timerRef = useRef(null);
+
+  const endGame = useCallback((reason) => {
+    setGameActive(false);
+    setGameOverReason(reason);
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, []);
+
+  const checkGameOverStatus = useCallback((currentGame) => {
+    setGameActive(false);
+    if (currentGame.isCheckmate()) {
+      const winner = currentGame.turn() === 'w' ? 'Negras' : 'Blancas';
+      const userWon = (winner === 'Blancas' && playerColor === 'w') || (winner === 'Negras' && playerColor === 'b');
+      if (userWon) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        soundFx.playVictory();
+        updateUserElo(userElo + 18);
+        endGame('¡Jaque Mate! ¡Has Ganado la Partida! (+18 Elo)');
+      } else {
+        soundFx.playDefeat();
+        updateUserElo(Math.max(400, userElo - 12));
+        endGame('Jaque Mate. El oponente ha ganado la partida. (-12 Elo)');
+      }
+    } else if (currentGame.isDraw()) {
+      endGame('Partida Tablas (Empate por Ahogado o repetición).');
+    }
+  }, [playerColor, userElo, updateUserElo, endGame]);
+
+  // Sync initialBotElo from props if selected in TrainingZone
+  useEffect(() => {
+    if (initialBotElo) {
+      setSelectedBotElo(initialBotElo);
+    }
+  }, [initialBotElo]);
 
   // Clock countdown logic
   useEffect(() => {
@@ -67,23 +102,34 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
       }, 1000);
     }
     return () => clearInterval(timerRef.current);
-  }, [gameActive, game.turn()]);
+  }, [gameActive, game, endGame]);
 
-  // AI Bot auto-move response
+  // Opponent Auto-Move Engine (Works for both Bot Mode and Online Matchmaking Mode)
   useEffect(() => {
-    if (gameActive && gameMode === 'bot' && game.turn() === 'b' && !game.isGameOver()) {
+    const opponentColor = playerColor === 'w' ? 'b' : 'w';
+    if (gameActive && game.turn() === opponentColor && !game.isGameOver()) {
+      const delay = gameMode === 'bot' ? 600 : 1500;
       const botTimer = setTimeout(() => {
-        const botMove = getBotMove(game, selectedBotElo);
+        const targetElo = gameMode === 'bot' ? selectedBotElo : opponentElo;
+        const botMove = getBotMove(game, targetElo);
         if (botMove) {
           const moveResult = game.move(botMove);
           if (moveResult) {
+            const nextGame = new Chess(game.fen());
+            setGame(nextGame);
             setLastMove({ from: moveResult.from, to: moveResult.to });
             setMoveHistory(prev => [...prev, moveResult.san]);
-            setEvalScore(evaluateBoard(game));
+            setEvalScore(evaluateBoard(nextGame));
 
-            if (game.isGameOver()) {
-              checkGameOverStatus(game);
-            } else if (game.inCheck()) {
+            // Random Chat reaction (25% chance in online mode)
+            if (gameMode !== 'bot' && Math.random() < 0.25) {
+              const reaction = multiplayerLobby.getRandomChatReaction(opponentName);
+              setChatMessages(prev => [...prev, reaction]);
+            }
+
+            if (nextGame.isGameOver()) {
+              checkGameOverStatus(nextGame);
+            } else if (nextGame.inCheck()) {
               soundFx.playCheck();
             } else if (moveResult.captured) {
               soundFx.playCapture();
@@ -92,17 +138,40 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
             }
           }
         }
-      }, 500);
+      }, delay);
       return () => clearTimeout(botTimer);
     }
-  }, [game, gameActive, gameMode]);
+  }, [game, gameActive, gameMode, playerColor, selectedBotElo, opponentElo, opponentName, checkGameOverStatus]);
 
-  const startNewGame = (mode = 'bot', botElo = selectedBotElo, timeSecs = timeControl) => {
+  const startNewGame = (mode = 'bot', botElo = selectedBotElo, timeSecs = timeControl, side = playerColor) => {
     soundFx.playButtonClick();
-    const newGame = new Chess();
+    let chosenColor = side;
+    if (side === 'random') {
+      chosenColor = Math.random() < 0.5 ? 'w' : 'b';
+    }
+
+    const newGame = new Chess(); // White always starts game
+    setPlayerColor(chosenColor);
+    setIsFlipped(chosenColor === 'b');
+
+    let initialHistory = [];
+    let initialLastMove = null;
+
+    // If human plays Black, White (Bot/Opponent) MUST start the game immediately
+    if (chosenColor === 'b' && mode === 'bot') {
+      const firstBotMove = getBotMove(newGame, botElo);
+      if (firstBotMove) {
+        const moveRes = newGame.move(firstBotMove);
+        if (moveRes) {
+          initialLastMove = { from: moveRes.from, to: moveRes.to };
+          initialHistory = [moveRes.san];
+        }
+      }
+    }
+
     setGame(newGame);
-    setLastMove(null);
-    setMoveHistory([]);
+    setLastMove(initialLastMove);
+    setMoveHistory(initialHistory);
     setGameMode(mode);
     setSelectedBotElo(botElo);
     setTimeControls(timeSecs);
@@ -110,14 +179,23 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
     setBlackTime(timeSecs);
     setGameActive(true);
     setGameOverReason(null);
-    setEvalScore(0);
+    setEvalScore(evaluateBoard(newGame));
     setAnalysisReport(null);
     setShowAnalysisModal(false);
 
     if (mode === 'bot') {
-      const botNames = { 200: 'Martin', 600: 'Elani', 1300: 'Nelson', 1800: 'Isabel', 2800: 'Magnus Bot' };
-      setOpponentName(`${botNames[botElo] || 'Bot'} (Bot)`);
+      const botMetadata = {
+        200: { name: 'Martin', avatar: '👨‍🌾' },
+        600: { name: 'Elani', avatar: '👩‍🎨' },
+        1300: { name: 'Nelson', avatar: '🧔‍♂️' },
+        1800: { name: 'Isabel (Maestra)', avatar: '👩‍🔬' },
+        2800: { name: 'Magnus Bot', avatar: '👑' }
+      };
+      const botInfo = botMetadata[botElo] || { name: 'Bot', avatar: '🤖' };
+      setOpponentName(`${botInfo.name} (Bot)`);
       setOpponentElo(botElo);
+      setOpponentAvatar(botInfo.avatar);
+      setChatMessages([{ sender: 'Sistema', text: `Partida iniciada contra ${botInfo.name} (${botElo} Elo).` }]);
     }
   };
 
@@ -128,8 +206,12 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
       setSearchingMatch(false);
       setOpponentName(opp.name);
       setOpponentElo(opp.elo);
-      startNewGame('online', 1200, 300);
-      setChatMessages([{ sender: 'Sistema', text: `¡Emparejado contra ${opp.name} (${opp.elo} Elo)!` }]);
+      setOpponentAvatar(opp.avatar || '⚔️');
+      startNewGame('online', opp.elo, 300, 'w');
+      setChatMessages([
+        { sender: 'Sistema', text: `¡Emparejado en línea contra ${opp.name} ${opp.country} (${opp.elo} Elo)!` },
+        { sender: opp.name, text: '¡Hola! Buena partida y diviértete.' }
+      ]);
     });
   };
 
@@ -137,10 +219,11 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
     soundFx.playButtonClick();
     const room = multiplayerLobby.createRoom('Tú', userElo);
     setActiveRoomCode(room.code);
-    setOpponentName('Esperando Oponente...');
-    setOpponentElo(userElo);
-    setChatMessages([{ sender: 'Sistema', text: `Sala creada. Comparte el código: ${room.code}` }]);
-    startNewGame('room', 1200, 600);
+    setOpponentName('GranMaestro_Online');
+    setOpponentElo(userElo + 15);
+    setOpponentAvatar('👑');
+    setChatMessages(room.messages);
+    startNewGame('room', userElo + 15, 600, 'w');
   };
 
   const joinPrivateRoom = () => {
@@ -150,46 +233,24 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
       setActiveRoomCode(res.room.code);
       setOpponentName(res.room.host.name);
       setOpponentElo(res.room.host.elo);
+      setOpponentAvatar('⚔️');
       setChatMessages(res.room.messages);
-      startNewGame('room', 1200, 600);
+      startNewGame('room', res.room.host.elo, 600, 'b');
     } else {
       alert(res.error);
     }
   };
 
   const handleUserMove = (moveResult) => {
+    const nextGame = new Chess(game.fen());
+    setGame(nextGame);
     setLastMove({ from: moveResult.from, to: moveResult.to });
     setMoveHistory(prev => [...prev, moveResult.san]);
-    setEvalScore(evaluateBoard(game));
+    setEvalScore(evaluateBoard(nextGame));
 
-    if (game.isGameOver()) {
-      checkGameOverStatus(game);
+    if (nextGame.isGameOver()) {
+      checkGameOverStatus(nextGame);
     }
-  };
-
-  const checkGameOverStatus = (currentGame) => {
-    setGameActive(false);
-    if (currentGame.isCheckmate()) {
-      const winner = currentGame.turn() === 'w' ? 'Negras' : 'Blancas';
-      if (winner === 'Blancas') {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        soundFx.playVictory();
-        updateUserElo(userElo + 16);
-        endGame('¡Jaque Mate! ¡Has Ganado la Partida! (+16 Elo)');
-      } else {
-        soundFx.playDefeat();
-        updateUserElo(Math.max(400, userElo - 12));
-        endGame('Jaque Mate. El oponente ha ganado la partida. (-12 Elo)');
-      }
-    } else if (currentGame.isDraw()) {
-      endGame('Partida Tablas (Empate por Ahogado o repetición).');
-    }
-  };
-
-  const endGame = (reason) => {
-    setGameActive(false);
-    setGameOverReason(reason);
-    if (timerRef.current) clearInterval(timerRef.current);
   };
 
   const runStockfishAnalysis = () => {
@@ -289,7 +350,7 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.6rem' }}>{gameMode === 'bot' ? '🤖' : '⚔️'}</span>
+              <span style={{ fontSize: '1.6rem' }}>{opponentAvatar}</span>
               <div>
                 <h4 style={{ fontSize: '0.95rem', color: '#fff' }}>{opponentName}</h4>
                 <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>⭐ {opponentElo} Elo</span>
@@ -391,9 +452,37 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme }) {
             </div>
           )}
 
-          {/* Time Control & Bot Selector */}
+          {/* Time Control, Player Color & Bot Selector */}
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <h3 style={{ fontSize: '1rem', color: '#fff' }}>⚙️ Configuración de Partida</h3>
+
+            {/* Side / Color Selector */}
+            <div>
+              <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Elección de Piezas (Blancas inician la partida):</label>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                {[
+                  { id: 'w', label: '⚪ Blancas (Mueves 1.º)' },
+                  { id: 'b', label: '⚫ Negras (Bot saca)' },
+                  { id: 'random', label: '🎲 Aleatorio' }
+                ].map(side => (
+                  <button
+                    key={side.id}
+                    className="btn-secondary"
+                    style={{
+                      flex: 1,
+                      fontSize: '0.75rem',
+                      borderColor: playerColor === side.id ? 'var(--accent-gold)' : 'var(--border-color)',
+                      color: playerColor === side.id ? 'var(--accent-gold)' : '#fff',
+                      fontWeight: playerColor === side.id ? 800 : 500
+                    }}
+                    onClick={() => startNewGame(gameMode, selectedBotElo, timeControl, side.id)}
+                  >
+                    {side.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Ritmo de Juego:</label>
               <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>

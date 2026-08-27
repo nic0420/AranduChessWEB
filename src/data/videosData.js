@@ -25,7 +25,7 @@ export const VIDEOS_DATA = [
     eloTarget: '800 - 1400 Elo',
     duration: '18:20',
     thumbnail: '⚡',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    videoUrl: 'https://www.youtube.com/embed/S3_J3C7_hC8',
     summary: 'Horquilla, Clavada, Enfilada, Ataque a la Descubierta y Sacrificios. Cómo identificar los patrones al instante.',
     takeaways: [
       'Busca piezas indefensas en el bando rival',

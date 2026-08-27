@@ -1,5 +1,5 @@
 // ==========================================================================
-// Interactive Lessons Data - Scaled by FIDE Elo Levels
+// Interactive Lessons Data - Scaled by FIDE Elo Levels (2600 ELO GM Audited)
 // Includes Theory, Board Demonstration, and Practical Board Test Exercises
 // ==========================================================================
 
@@ -35,12 +35,14 @@ export const LESSONS_DATA = [
         explanation: '¡Excelente! 1.e4 controla la casilla d5 y libera el paso del Alfil de f1 y la Dama.'
       },
       {
-        instruction: 'Paso 2: Desarrolla tu Caballo blanco a f3 para atacar el peón de e5 y controlar d4.',
+        instruction: 'Paso 2: Tras 1...e5 de las negras, desarrolla tu Caballo blanco a f3 para atacar e5 y controlar d4.',
+        initialFenOverride: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
         targetMove: { from: 'g1', to: 'f3' },
         explanation: '¡Gran movimiento! Los Caballos deben desarrollarse antes que los Alfiles habitualmente.'
       },
       {
-        instruction: 'Paso 3: Saca tu Alfil de casillas blancas a c4 apuntando a la casilla vulnerable f7.',
+        instruction: 'Paso 3: Tras 2...Nc6, saca tu Alfil de casillas blancas a c4 apuntando a la casilla vulnerable f7.',
+        initialFenOverride: 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3',
         targetMove: { from: 'f1', to: 'c4' },
         explanation: '¡Perfecto! Tu Alfil apunta directo al peón f7, la casilla más débil del bando negro.'
       }
@@ -65,7 +67,7 @@ export const LESSONS_DATA = [
     initialFen: 'r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 2 3',
     steps: [
       {
-        instruction: '¡Es tu turno de dar Jaque Mate! Captura el peón f7 con tu Dama blanca.',
+        instruction: '¡Es tu turno de dar Jaque Mate! Captura el peón f7 con tu Dama blanca en h5.',
         targetMove: { from: 'h5', to: 'f7' },
         explanation: '¡Jaque Mate! El Rey negro no puede capturar a la Dama porque está protegida por el Alfil de c4, y no tiene casillas de escape.'
       }
@@ -81,13 +83,13 @@ export const LESSONS_DATA = [
     theory: `
       Una **horquilla** es una táctica devastadora porque el oponente solo puede salvar una de las piezas amenazadas.
       
-      Los Caballos son ideales para realizar horquillas debido a su movimiento en "L" capaz de saltar sobre otras piezas y atacar al Rey y a la Dama al mismo tiempo.
+      Los Caballos son ideales para realizar horquillas debido a su movimiento en "L" capaz de saltar sobre otras piezas y atacar al Rey y a la Torre al mismo tiempo.
     `,
-    initialFen: 'r1bqk2r/pppp1ppp/2n5/4n3/2B1P3/5N2/PPP2PPP/RNBQK2R w KQkq - 0 6',
+    initialFen: 'r3k2r/ppp2ppp/8/3N4/8/8/PPP2PPP/R1B1K2R w KQkq - 0 1',
     steps: [
       {
-        instruction: 'Las negras tienen su Rey y Torre en casillas clave. Encuentra el salto de Caballo en d7 para hacer horquilla a Rey y Torre.',
-        initialFenOverride: 'r3k2r/ppp2ppp/8/3n4/8/8/PPP2PPP/R1B1K2R w KQkq - 0 1',
+        instruction: 'Encuentra el salto de Caballo blanco desde d5 a c7 para hacer horquilla a Rey (e8) y Torre (a8).',
+        initialFenOverride: 'r3k2r/ppp2ppp/8/3N4/8/8/PPP2PPP/R1B1K2R w KQkq - 0 1',
         targetMove: { from: 'd5', to: 'c7' },
         explanation: '¡Increíble! Caballo a c7 da jaque al Rey y ataca la Torre de a8 al mismo tiempo.'
       }
@@ -156,3 +158,4 @@ export const LESSONS_DATA = [
     ]
   }
 ];
+

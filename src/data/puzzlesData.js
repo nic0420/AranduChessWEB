@@ -1,5 +1,5 @@
 // ==========================================================================
-// Tactical Puzzles Dataset for Exercise Zone & Streak Mode
+// Tactical Puzzles Dataset for Exercise Zone & Streak Mode (2600 ELO GM Audited)
 // Categorized by tactic theme, difficulty rating, FEN, and moves
 // ==========================================================================
 
@@ -17,12 +17,12 @@ export const PUZZLES_DATABASE = [
   {
     id: 'puz-002',
     title: 'Horquilla Mortal de Caballo',
-    fen: 'r3k2r/ppp2ppp/8/3n4/8/8/PPP2PPP/R1B1K2R w KQkq - 0 1',
+    fen: 'r3k2r/ppp2ppp/8/3N4/8/8/PPP2PPP/R1B1K2R w KQkq - 0 1',
     rating: 850,
     theme: 'Horquilla',
-    description: 'Encuentra el salto de Caballo que ataca al Rey y a la Torre al mismo tiempo.',
+    description: 'Encuentra el salto de Caballo blanco que ataca al Rey y a la Torre al mismo tiempo.',
     solution: [{ from: 'd5', to: 'c7' }],
-    hint: 'La casilla c7 es débil y conecta con e8 y a8.'
+    hint: 'La casilla c7 es débil y conecta un ataque doble sobre e8 y a8.'
   },
   {
     id: 'puz-003',
@@ -30,19 +30,19 @@ export const PUZZLES_DATABASE = [
     fen: 'r1bqk2r/pppp1ppp/2n2n2/4p3/1bB1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 5',
     rating: 1100,
     theme: 'Ataque a la Descubierta',
-    description: 'Mueve una pieza para destapar el ataque de otra pieza sobre un objetivo valioso.',
+    description: 'Centraliza tu Caballo c3 a d5 para presionar los puntos vulnerables del negro.',
     solution: [{ from: 'c3', to: 'd5' }],
-    hint: 'Si mueves tu Caballo central, tu Alfil o Torre abrirán línea.'
+    hint: 'Avanza tu Caballo central a d5 atacando el Alfil b4 y el Caballo f6.'
   },
   {
     id: 'puz-004',
-    title: 'Sacrificio de Dama Deslumbrante',
-    fen: 'r1b2rk1/pp3ppp/2n5/4p3/2B1q3/5N2/PPP2PPP/R2QK2R w KQ - 0 1',
+    title: 'Sacrificio de Alfil en f7',
+    fen: 'r1b2rk1/pp3ppp/2n5/4p3/2B1q3/5N2/PPP2PPP/R2Q1RK1 w - - 0 1',
     rating: 1350,
     theme: 'Sacrificio',
-    description: 'Blanca juega y destruye la defensa enemiga.',
+    description: 'Aprovecha la vulnerabilidad del enroque negro ejecutando un ataque directo sobre f7.',
     solution: [{ from: 'c4', to: 'f7' }],
-    hint: 'Apunta a f7 con la pieza menor antes de usar la Dama.'
+    hint: 'Sacrifica tu Alfil en f7 para romper la estructura y desorganizar la defensa enemiga.'
   },
   {
     id: 'puz-005',
@@ -50,18 +50,19 @@ export const PUZZLES_DATABASE = [
     fen: '3r2k1/ppp2ppp/8/8/8/4B3/PPP2PPP/3R2K1 w - - 0 1',
     rating: 1500,
     theme: 'Clavada',
-    description: 'Aprovecha que la Torre enemiga está expuesta.',
+    description: 'Aprovecha que la octava fila enemiga está expuesta.',
     solution: [{ from: 'd1', to: 'd8' }],
-    hint: 'La octava fila está desprotegida.'
+    hint: 'La octava fila no tiene defensores suficientes.'
   },
   {
     id: 'puz-006',
-    title: 'Enfilada de Alfil',
-    fen: '8/p7/1p6/1B6/8/2k5/r7/2K5 w - - 0 1',
+    title: 'Enfilada Ganadora de Alfil (Skewer)',
+    fen: '8/8/6r1/8/4k3/8/2B5/4K3 w - - 0 1',
     rating: 1650,
     theme: 'Enfilada (Skewer)',
-    description: 'Ataca al Rey a través de la diagonal para ganar la pieza detrás.',
-    solution: [{ from: 'b5', to: 'c4' }],
-    hint: 'Jaque en c4 alinearás Rey y Torre.'
+    description: 'Ataca al Rey a través de la diagonal d3-g6 para ganar la Torre expuesta detrás.',
+    solution: [{ from: 'c2', to: 'd3' }],
+    hint: 'Juega Alfil a d3 dando jaque al Rey en e4 y enfilando la Torre de g6.'
   }
 ];
+

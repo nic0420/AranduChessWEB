@@ -15,6 +15,7 @@ export default function App() {
   const [userElo, setUserElo] = useState(1250);
   const [puzzleRating, setPuzzleRating] = useState(1320);
   const [streak, setStreak] = useState(5);
+  const [selectedBotElo, setSelectedBotElo] = useState(1300);
 
   // Master Woodcraft default board theme
   const [boardTheme, setBoardTheme] = useState('wood'); // 'wood' | 'default' | 'cyber' | 'glass'
@@ -25,6 +26,7 @@ export default function App() {
   };
 
   const handleSelectBotFromTraining = (botElo) => {
+    setSelectedBotElo(botElo);
     setCurrentTab('play');
   };
 
@@ -36,6 +38,7 @@ export default function App() {
             userElo={userElo}
             updateUserElo={updateUserElo}
             boardTheme={boardTheme}
+            initialBotElo={selectedBotElo}
           />
         );
       case 'learn':

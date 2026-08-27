@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import { OPENINGS_DATA, ENDGAMES_DATA, AI_BOTS } from '../data/trainingData';
-import { Dumbbell, Eye, BookOpen, Cpu, ShieldCheck, Zap, RefreshCcw } from 'lucide-react';
+import { Dumbbell, Cpu, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 /**
@@ -22,7 +22,7 @@ export default function TrainingZone({ boardTheme, onSelectBot }) {
   const [targetSquare, setTargetSquare] = useState('e4');
 
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
+  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
   // Vision Quiz countdown timer
   useEffect(() => {
