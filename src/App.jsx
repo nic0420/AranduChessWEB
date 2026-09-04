@@ -7,6 +7,31 @@ import TrainingZone from './pages/TrainingZone';
 import VideoZone from './pages/VideoZone';
 import ProfileZone from './pages/ProfileZone';
 
+class ZoneErrorBoundary extends React.Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    console.error('[v0] Zone render error:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <section className="zone-error" role="alert">
+          <h1>No se pudo cargar esta zona</h1>
+          <p>La plataforma sigue disponible. Recarga la página para intentarlo nuevamente.</p>
+          <button className="btn-primary" onClick={() => this.setState({ hasError: false })}>Reintentar</button>
+        </section>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState('play');
   const [isMobileSim, setIsMobileSim] = useState(false);
@@ -103,7 +128,7 @@ export default function App() {
 
           {/* Scrollable Mobile Body Content */}
           <main style={{ flex: 1, overflowY: 'auto', paddingBottom: '70px', paddingTop: '10px' }}>
-            {renderCurrentZone()}
+            <ZoneErrorBoundary>{renderCurrentZone()}</ZoneErrorBoundary>
           </main>
         </div>
       </div>
@@ -124,7 +149,7 @@ export default function App() {
       />
       <div className="platform-main">
         <main style={{ flex: 1, overflowY: 'auto', paddingBottom: '80px' }}>
-          {renderCurrentZone()}
+          <ZoneErrorBoundary>{renderCurrentZone()}</ZoneErrorBoundary>
         </main>
       </div>
     </div>
