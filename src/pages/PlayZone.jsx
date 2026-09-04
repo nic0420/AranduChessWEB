@@ -380,7 +380,7 @@ export default function PlayZone({ userElo, updateUserElo, boardTheme, initialBo
             onMoveMade={handleUserMove}
             isFlipped={isFlipped}
             boardTheme={boardTheme}
-            allowMoves={gameActive && !game.isGameOver()}
+            allowMoves={gameActive && !(typeof game?.isGameOver === 'function' && game.isGameOver())}
             lastMove={lastMove}
           />
 
