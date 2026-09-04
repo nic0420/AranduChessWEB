@@ -1,252 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { Play, BookOpen, Target, Dumbbell, Video, User, Smartphone, Volume2, VolumeX, Flame, Download } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Play, BookOpen, Target, Dumbbell, Video, User, Volume2, VolumeX, Flame, Download, Settings } from 'lucide-react';
 import { soundFx } from '../services/audio';
 
-/**
- * Navbar component - Arandu Chess Edition with Logo Image
- */
-export default function Navbar({
-  currentTab,
-  setCurrentTab,
-  isMobileSim,
-  setIsMobileSim,
-  userElo = 1250,
-  streak = 5,
-  soundEnabled = true,
-  setSoundEnabled
-}) {
+const LOGO = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/channels4_profile-m7vEPiMJdWz72exzr6kwYMI0ACLhLE.jpg';
+
+export default function Navbar({ currentTab, setCurrentTab, isMobileSim, setIsMobileSim, userElo = 1250, streak = 5, soundEnabled = true, setSoundEnabled }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isStandalone, setIsStandalone] = useState(false);
-
   useEffect(() => {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    });
-
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsStandalone(true);
-    }
+    const handler = (event) => { event.preventDefault(); setDeferredPrompt(event); };
+    window.addEventListener('beforeinstallprompt', handler);
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const navItems = [
-    { id: 'play', label: 'Jugar', icon: Play, badge: 'Online' },
-    { id: 'learn', label: 'Aprender', icon: BookOpen, badge: 'Elo FIDE' },
-    { id: 'puzzles', label: 'Ejercicios', icon: Target, badge: 'Puzzles' },
-    { id: 'training', label: 'Entrenar', icon: Dumbbell, badge: 'Bots' },
-    { id: 'videos', label: 'Videos', icon: Video, badge: 'Clases' },
-    { id: 'profile', label: 'Perfil', icon: User, badge: `${userElo}` }
+    { id: 'play', label: 'Jugar', icon: Play },
+    { id: 'learn', label: 'Aprender', icon: BookOpen },
+    { id: 'puzzles', label: 'Puzzles', icon: Target },
+    { id: 'training', label: 'Entrenar', icon: Dumbbell },
+    { id: 'videos', label: 'Videos', icon: Video },
+    { id: 'profile', label: 'Perfil', icon: User },
   ];
-
-  const handleTabChange = (tabId) => {
-    soundFx.playButtonClick();
-    setCurrentTab(tabId);
+  const changeTab = (id) => { soundFx.playButtonClick(); setCurrentTab(id); };
+  const install = () => {
+    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => setDeferredPrompt(null)); }
+    else alert('En tu navegador, elige “Agregar a la pantalla de inicio” para instalar Arandu Chess.');
   };
 
-  const handleMobileSimToggle = () => {
-    soundFx.playButtonClick();
-    setIsMobileSim(!isMobileSim);
-  };
-
-  const handleSoundToggle = () => {
-    const nextState = !soundEnabled;
-    setSoundEnabled(nextState);
-    soundFx.toggleSound(nextState);
-    if (nextState) soundFx.playButtonClick();
-  };
-
-  const handleInstallPWA = () => {
-    soundFx.playButtonClick();
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('Usuario instalo Arandu Chess PWA');
-        }
-        setDeferredPrompt(null);
-      });
-    } else {
-      alert('Para instalar Arandu Chess en tu celular:\n1. Abre esta página en Chrome o Safari.\n2. Presiona "Agregar a la pantalla de inicio".');
-    }
-  };
-
-  return (
-    <>
-      {/* Desktop Top Header Bar */}
-      <header
-        style={{
-          height: 'var(--header-height)',
-          backgroundColor: 'var(--bg-secondary)',
-          borderBottom: '1px solid var(--border-color-strong)',
-          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 20px',
-          zIndex: 100
-        }}
-      >
-        {/* Brand Logo Image & Title */}
-        <div
-          style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-          onClick={() => handleTabChange('play')}
-        >
-          <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/channels4_profile-m7vEPiMJdWz72exzr6kwYMI0ACLhLE.jpg"
-            alt="Arandu Chess Logo"
-            style={{
-              height: '46px',
-              width: 'auto',
-              borderRadius: '8px',
-              objectFit: 'contain',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)'
-            }}
-          />
-          <div>
-            <h2 className="font-cinzel" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
-              ARANDU <span style={{ color: 'var(--accent-gold)' }}>CHESS</span>
-            </h2>
-            <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
-              AJEDREZ INTERACTIVO & MÓVIL
-            </p>
-          </div>
-        </div>
-
-        {/* Desktop Navigation Links */}
-        <nav className="desktop-only-nav" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {navItems.map(item => {
-            const Icon = item.icon;
-            const isActive = currentTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleTabChange(item.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '9px 18px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: isActive ? 'var(--bg-tertiary)' : 'transparent',
-                  color: isActive ? 'var(--accent-gold)' : 'var(--text-secondary)',
-                  fontWeight: isActive ? '800' : '600',
-                  fontSize: '0.9rem',
-                  border: isActive ? '1px solid var(--accent-gold)' : '1px solid transparent'
-                }}
-              >
-                <Icon size={18} color={isActive ? 'var(--accent-gold)' : 'var(--text-secondary)'} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* User Stats & Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Daily Streak Counter */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: 'var(--bg-tertiary)',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              border: '1px solid var(--accent-gold)',
-              fontSize: '0.85rem',
-              fontWeight: 800,
-              color: 'var(--accent-gold)'
-            }}
-            title="¡Racha Diaria de Ajedrez!"
-          >
-            <Flame size={16} color="#ef4444" /> <span>{streak} días</span>
-          </div>
-
-          {/* Sound Toggle */}
-          <button
-            onClick={handleSoundToggle}
-            style={{
-              background: 'var(--bg-tertiary)',
-              color: soundEnabled ? 'var(--accent-gold)' : 'var(--text-muted)',
-              padding: '9px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px solid var(--border-color)'
-            }}
-            title={soundEnabled ? 'Silenciar sonidos de madera' : 'Activar sonidos de madera'}
-          >
-            {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-          </button>
-
-          {/* PWA Install Button */}
-          {!isStandalone && (
-            <button
-              onClick={handleInstallPWA}
-              className="btn-gold"
-              style={{ padding: '7px 12px', fontSize: '0.8rem' }}
-              title="Instalar Arandu Chess en tu Celular"
-            >
-              <Download size={15} /> Instalar App
-            </button>
-          )}
-
-          {/* Mobile Simulator Mode Toggle Button */}
-          <button
-            onClick={handleMobileSimToggle}
-            className={isMobileSim ? 'btn-primary' : 'btn-secondary'}
-            style={{ fontSize: '0.8rem', padding: '8px 14px' }}
-            title="Alternar vista simulada de Celular / Escritorio"
-          >
-            <Smartphone size={16} />
-            <span>{isMobileSim ? 'Vista PC' : 'Vista Celular'}</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Bottom Navigation Bar */}
-      <div
-        className="mobile-bottom-nav"
-        style={{
-          position: isMobileSim ? 'absolute' : 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 'var(--mobile-nav-height)',
-          backgroundColor: 'var(--bg-secondary)',
-          borderTop: '1px solid var(--border-color-strong)',
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          zIndex: 900
-        }}
-      >
-        {navItems.map(item => {
-          const Icon = item.icon;
-          const isActive = currentTab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleTabChange(item.id)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '3px',
-                background: 'none',
-                color: isActive ? 'var(--accent-gold)' : 'var(--text-muted)',
-                fontSize: '0.75rem',
-                fontWeight: isActive ? 800 : 500,
-                width: '16%'
-              }}
-            >
-              <Icon size={20} color={isActive ? 'var(--accent-gold)' : 'var(--text-muted)'} />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </>
-  );
+  return <>
+    <aside className="platform-sidebar">
+      <button className="brand-lockup" onClick={() => changeTab('play')} aria-label="Ir al inicio">
+        <img src={LOGO} alt="Arandu Chess" />
+        <span><strong>ARANDU</strong><b>CHESS</b></span>
+      </button>
+      <div className="sidebar-section-label">JUGAR</div>
+      <nav className="platform-nav">
+        {navItems.slice(0, 1).map(({ id, label, icon: Icon }) => <button key={id} className={currentTab === id ? 'active' : ''} onClick={() => changeTab(id)}><Icon size={19} /><span>{label}</span><em>›</em></button>)}
+      </nav>
+      <div className="sidebar-section-label">MEJORAR</div>
+      <nav className="platform-nav">
+        {navItems.slice(1, 4).map(({ id, label, icon: Icon }) => <button key={id} className={currentTab === id ? 'active' : ''} onClick={() => changeTab(id)}><Icon size={19} /><span>{label}</span></button>)}
+      </nav>
+      <div className="sidebar-section-label">INSPIRACIÓN</div>
+      <nav className="platform-nav">
+        {navItems.slice(4).map(({ id, label, icon: Icon }) => <button key={id} className={currentTab === id ? 'active' : ''} onClick={() => changeTab(id)}><Icon size={19} /><span>{label}</span></button>)}
+      </nav>
+      <div className="sidebar-spacer" />
+      <div className="sidebar-profile"><div className="avatar-mark">A</div><div><strong>Jugador Arandu</strong><span>{userElo} ELO</span></div><Settings size={16} /></div>
+    </aside>
+    <header className="mobile-topbar">
+      <button className="mobile-brand" onClick={() => changeTab('play')}><img src={LOGO} alt="Arandu Chess" /><strong>ARANDU <b>CHESS</b></strong></button>
+      <div className="mobile-actions"><span><Flame size={16} />{streak}</span><button onClick={() => { const next = !soundEnabled; setSoundEnabled(next); soundFx.toggleSound(next); }} aria-label="Sonido">{soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}</button></div>
+    </header>
+    <div className="mobile-bottom-nav">{navItems.slice(0, 5).map(({ id, label, icon: Icon }) => <button key={id} className={currentTab === id ? 'active' : ''} onClick={() => changeTab(id)}><Icon size={19} /><span>{label}</span></button>)}</div>
+    <div className="desktop-utility"><span><Flame size={16} /> {streak} días</span>{!isStandalone && <button onClick={install}><Download size={15} /> Instalar</button>}<button onClick={() => { const next = !soundEnabled; setSoundEnabled(next); soundFx.toggleSound(next); }}>{soundEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}</button></div>
+  </>;
 }

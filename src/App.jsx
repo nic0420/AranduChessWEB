@@ -111,21 +111,18 @@ export default function App() {
   }
 
   return (
-    <div className="app-container">
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        {/* Navigation Bar */}
-        <Navbar
-          currentTab={currentTab}
-          setCurrentTab={setCurrentTab}
-          isMobileSim={isMobileSim}
-          setIsMobileSim={setIsMobileSim}
-          userElo={userElo}
-          streak={streak}
-          soundEnabled={soundEnabled}
-          setSoundEnabled={setSoundEnabled}
-        />
-
-        {/* Scrollable Viewport Content Area */}
+    <div className="app-container platform-shell">
+      <Navbar
+        currentTab={currentTab}
+        setCurrentTab={setCurrentTab}
+        isMobileSim={isMobileSim}
+        setIsMobileSim={setIsMobileSim}
+        userElo={userElo}
+        streak={streak}
+        soundEnabled={soundEnabled}
+        setSoundEnabled={setSoundEnabled}
+      />
+      <div className="platform-main">
         <main style={{ flex: 1, overflowY: 'auto', paddingBottom: '80px' }}>
           {renderCurrentZone()}
         </main>
