@@ -130,9 +130,10 @@ export default function Chessboard({
   const displayFiles = isFlipped ? [...files].reverse() : files;
   const displayRanks = isFlipped ? [...ranks].reverse() : ranks;
 
-  // Find King in check position
+  // Find King in check position. Keep the board render-safe while a game state is initializing.
   let inCheckSquare = null;
-  if (game.inCheck()) {
+  const isInCheck = typeof game?.inCheck === 'function' ? game.inCheck() : false;
+  if (isInCheck) {
     const turn = game.turn();
     const board = game.board();
     for (let r = 0; r < 8; r++) {
