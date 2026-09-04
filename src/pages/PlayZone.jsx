@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import EvaluationBar from '../components/EvaluationBar';
