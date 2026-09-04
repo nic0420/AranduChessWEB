@@ -92,7 +92,7 @@ export default function Navbar({
           onClick={() => handleTabChange('play')}
         >
           <img
-            src="/arandu-logo.png"
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/channels4_profile-m7vEPiMJdWz72exzr6kwYMI0ACLhLE.jpg"
             alt="Arandu Chess Logo"
             style={{
               height: '46px',
